@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Report Flooding</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="form-view">
+    <h1>Report flooding</h1>
+    <p class="safety">
+      <strong>Stay safe.</strong> Never enter floodwater. If life is at risk call <a href="tel:000">000</a>.
+      For flood or storm help call SES on <a href="tel:132500">132 500</a>.
+    </p>
+
+    <section>
+      <h2>1. Photo</h2>
+      <label class="button" for="photo-input">Take or choose a photo</label>
+      <input id="photo-input" type="file" accept="image/*" capture="environment" hidden>
+      <img id="photo-preview" alt="Selected photo preview" hidden>
+    </section>
+
+    <section>
+      <h2>2. Location</h2>
+      <p id="location-status">Finding your location…</p>
+      <div id="map" class="map"></div>
+      <p class="hint">Not quite right? Drag the pin or tap the map. <button id="use-gps" type="button" class="link" hidden>Use my GPS location</button></p>
+    </section>
+
+    <button id="submit" type="button" class="button primary" disabled>Submit report</button>
+    <p id="error" class="error" hidden></p>
+  </main>
+
+  <main id="thanks-view" hidden>
+    <h1>Thank you</h1>
+    <p>Your flood report has been received.</p>
+    <button id="another" type="button" class="button">Submit another report</button>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="report.js"></script>
+</body>
+</html>

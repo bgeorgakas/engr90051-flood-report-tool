@@ -1,0 +1,6 @@
+-r requirements.txt
+pytest==9.1.1
+httpx==0.28.1
+# Data prep (scripts/prepare_data.py) only
+geopandas==1.1.4
+requests==2.34.2
