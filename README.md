@@ -40,6 +40,13 @@ The `reports` table is created on startup.
 
 The **Clear all reports** button on `/map.html` deletes every report after a confirmation prompt. **It is unauthenticated**, so anyone with the URL can use it. This is accepted for the prototype. `python scripts/clear_reports.py` does the same from the command line. Browsers only allow camera and GPS on `https://` or `localhost`. To test location on a desktop, use Chrome DevTools → More tools → Sensors → Location.
 
+## Summary report for grading
+```bash
+python scripts/summary_report.py            # writes reports-summary-YYYYMMDD.pdf
+python scripts/summary_report.py -o out.pdf
+```
+Builds a fillable PDF of every report in the database, for checking the matching by hand. The cover page has an overview map, a blank tally table and the grade definitions. Each report then gets one page with its photo, a zoomed map (search radius, candidates #1–#5, other surface inlets), the candidate table, and *Correct / Almost correct / Not correct* boxes plus an *Actual asset no.* field. Only the #1 candidate is graded. Grades are saved in the PDF, not the database. Basemap tiles come from tile.openstreetmap.org and are cached in `~/.cache/flood-report-tool/tiles`.
+
 ## Deploying to Render
 Both pieces are created manually in the Render dashboard. Put them in the same region (Singapore is closest to Melbourne).
 

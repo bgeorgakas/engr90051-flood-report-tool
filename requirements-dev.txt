@@ -6,3 +6,6 @@ geopandas==1.1.4
 requests==2.34.2
 # Maintenance scripts
 python-dotenv==1.2.4
+# Summary report (scripts/summary_report.py) only
+reportlab==5.0.1
+pillow==13.0.0
