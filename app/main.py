@@ -15,6 +15,7 @@ from app.matching import load_inlets, match
 APP_DIR = Path(__file__).resolve().parent
 DATA_DIR = APP_DIR / "data"
 MAX_PHOTO_BYTES = 10 * 1024 * 1024
+MAX_NOTE_CHARS = 500
 
 inlets = load_inlets(DATA_DIR / "inlets.geojson")
 
@@ -36,6 +37,7 @@ def create_report(
     location_source: Annotated[Literal["gps", "manual"], Form()],
     accuracy_m: Annotated[float | None, Form(ge=0)] = None,
     captured_at: Annotated[datetime | None, Form()] = None,
+    note: Annotated[str | None, Form(max_length=MAX_NOTE_CHARS)] = None,
 ):
     if not (photo.content_type or "").startswith("image/"):
         raise HTTPException(400, "Photo must be an image")
@@ -53,6 +55,7 @@ def create_report(
         photo=content,
         photo_mime=photo.content_type,
         candidates=candidates,
+        note=(note or "").strip() or None,
     )
     return {"id": report_id}
 
@@ -60,6 +63,12 @@ def create_report(
 @app.get("/api/reports")
 def get_reports():
     return db.list_reports()
+
+
+@app.delete("/api/reports")
+def delete_reports():
+    """Delete all reports. Unauthenticated: acceptable for the prototype only."""
+    return {"deleted": db.clear_reports()}
 
 
 @app.get("/api/reports/{report_id}/photo")

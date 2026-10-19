@@ -18,9 +18,15 @@ CREATE TABLE IF NOT EXISTS reports (
     location_source TEXT NOT NULL,
     photo           BYTEA NOT NULL,
     photo_mime      TEXT NOT NULL,
-    candidates      JSONB NOT NULL
+    candidates      JSONB NOT NULL,
+    note            TEXT
 )
 """
+
+# Columns added after the table was first deployed.
+MIGRATIONS = [
+    "ALTER TABLE reports ADD COLUMN IF NOT EXISTS note TEXT",
+]
 
 
 def connect() -> psycopg.Connection:
@@ -30,6 +36,8 @@ def connect() -> psycopg.Connection:
 def init_db() -> None:
     with connect() as conn:
         conn.execute(SCHEMA)
+        for statement in MIGRATIONS:
+            conn.execute(statement)
 
 
 def insert_report(
@@ -42,17 +50,19 @@ def insert_report(
     photo: bytes,
     photo_mime: str,
     candidates: list[dict],
+    note: str | None,
 ) -> int:
     with connect() as conn:
         row = conn.execute(
             """
             INSERT INTO reports
-                (captured_at, lat, lon, accuracy_m, location_source, photo, photo_mime, candidates)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                (captured_at, lat, lon, accuracy_m, location_source, photo, photo_mime,
+                 candidates, note)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id
             """,
             (captured_at, lat, lon, accuracy_m, location_source, photo, photo_mime,
-             Jsonb(candidates)),
+             Jsonb(candidates), note),
         ).fetchone()
     return row["id"]
 
@@ -61,10 +71,19 @@ def list_reports() -> list[dict]:
     with connect() as conn:
         return conn.execute(
             """
-            SELECT id, received_at, captured_at, lat, lon, accuracy_m, location_source, candidates
+            SELECT id, received_at, captured_at, lat, lon, accuracy_m, location_source,
+                   candidates, note
             FROM reports ORDER BY received_at DESC
             """
         ).fetchall()
+
+
+def clear_reports() -> int:
+    """Delete every report and restart IDs at 1. Returns the number deleted."""
+    with connect() as conn:
+        count = conn.execute("SELECT count(*) AS n FROM reports").fetchone()["n"]
+        conn.execute("TRUNCATE reports RESTART IDENTITY")
+    return count
 
 
 def get_photo(report_id: int) -> dict | None:

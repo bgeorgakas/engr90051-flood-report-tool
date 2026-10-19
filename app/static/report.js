@@ -133,6 +133,8 @@ el("submit").addEventListener("click", async () => {
   form.append("location_source", state.source);
   if (state.accuracy !== null) form.append("accuracy_m", state.accuracy);
   form.append("captured_at", state.capturedAt);
+  const note = el("note").value.trim();
+  if (note) form.append("note", note);
 
   try {
     const resp = await fetch("/api/reports", { method: "POST", body: form });

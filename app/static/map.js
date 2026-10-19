@@ -52,6 +52,7 @@ function popupHtml(report) {
         <img src="/api/reports/${report.id}/photo" alt="Report ${report.id} photo">
       </a>
       <p><strong>Report #${report.id}</strong> · ${when}<br>${where}</p>
+      ${report.note ? `<p class="note">“${escapeHtml(report.note)}”</p>` : ""}
       <table>
         <thead><tr><th>#</th><th>Pit</th><th>Type</th><th>Dist.</th><th>Score</th></tr></thead>
         <tbody>${rows}</tbody>
@@ -75,9 +76,47 @@ function showCandidates(report) {
   });
 }
 
+let reportCount = 0;
+
+// Admin control: delete all reports.
+const ClearControl = L.Control.extend({
+  options: { position: "topleft" },
+  onAdd() {
+    const button = L.DomUtil.create("button", "clear-reports");
+    button.type = "button";
+    button.textContent = "Clear all reports";
+    L.DomEvent.disableClickPropagation(button);
+    L.DomEvent.on(button, "click", clearReports);
+    return button;
+  },
+});
+new ClearControl().addTo(map);
+
+async function clearReports() {
+  if (reportCount === 0) {
+    alert("There are no reports to clear.");
+    return;
+  }
+  if (!confirm(`Permanently delete all ${reportCount} reports? This cannot be undone.`)) return;
+
+  const resp = await fetch("/api/reports", { method: "DELETE" });
+  if (!resp.ok) {
+    const body = await resp.json().catch(() => ({}));
+    alert(`Couldn't clear reports: ${body.detail || resp.status}`);
+    return;
+  }
+  const { deleted } = await resp.json();
+  map.closePopup();
+  reportsLayer.clearLayers();
+  candidatesLayer.clearLayers();
+  reportCount = 0;
+  alert(`Deleted ${deleted} reports.`);
+}
+
 fetch("/api/reports")
   .then((r) => r.json())
   .then((reports) => {
+    reportCount = reports.length;
     reports.forEach((report) => {
       L.circleMarker([report.lat, report.lon], {
         radius: 8,

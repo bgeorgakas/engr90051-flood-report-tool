@@ -36,7 +36,9 @@ DATABASE_URL=postgresql://user:pass@localhost:5432/floods uvicorn app.main:app -
 uvicorn app.main:app --reload --env-file .env
 ```
 
-The `reports` table is created on startup. Browsers only allow camera and GPS on `https://` or `localhost`. To test location on a desktop, use Chrome DevTools → More tools → Sensors → Location.
+The `reports` table is created on startup.
+
+The **Clear all reports** button on `/map.html` deletes every report after a confirmation prompt. **It is unauthenticated**, so anyone with the URL can use it. This is accepted for the prototype. `python scripts/clear_reports.py` does the same from the command line. Browsers only allow camera and GPS on `https://` or `localhost`. To test location on a desktop, use Chrome DevTools → More tools → Sensors → Location.
 
 ## Deploying to Render
 Both pieces are created manually in the Render dashboard. Put them in the same region (Singapore is closest to Melbourne).
@@ -54,7 +56,6 @@ Both pieces are created manually in the Render dashboard. Put them in the same r
    - Environment variables:
      - `PYTHON_VERSION` = `3.11.15`
      - `DATABASE_URL` = the database's **Internal** Database URL
-
 Free-tier caveats:
 - The web service sleeps after 15 min idle and takes about a minute to wake up. Open the site before a demo.
 - **The free Postgres database is deleted 30 days after it is created.** Back it up before then:

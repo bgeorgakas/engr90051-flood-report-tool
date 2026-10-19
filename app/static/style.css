@@ -67,9 +67,31 @@ h2 { font-size: 1.1rem; margin: 1.25rem 0 0.5rem; }
 }
 
 .hint { font-size: 0.9rem; color: #475569; }
+.optional { font-weight: normal; color: #64748b; font-size: 0.9rem; }
+
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #94a3b8;
+  border-radius: 8px;
+  font: inherit;
+  resize: vertical;
+}
+
+.report-popup .note { font-style: italic; white-space: pre-wrap; }
 .error { color: #b91c1c; }
 
 body.full, .map.full { height: 100vh; margin: 0; border-radius: 0; }
+
+.clear-reports {
+  padding: 6px 10px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  background: white;
+  color: #b91c1c;
+  font: 600 0.85rem system-ui, sans-serif;
+  cursor: pointer;
+}
 
 .report-popup img { width: 100%; border-radius: 4px; }
 .report-popup p { margin: 6px 0; }
